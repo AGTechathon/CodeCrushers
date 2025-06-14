@@ -1,35 +1,35 @@
-<%- include('partials/header') %>
+const express = require('express');
+const router = express.Router();
+const HabitProgress = require('../models/HabitProgress'); // Make sure model path is correct
 
-<div class="container">
-  <h1 style="text-align: center; margin-top: 20px;"><%= habitName %> - Levels</h1>
+// Already existing routes above...
 
-  <div class="levels-grid">
-    <% levels.forEach(level => { %>
-      <div class="level-card <%= level.unlocked ? 'unlocked' : 'locked' %>">
-        <h2>Level <%= level.level %></h2>
-        <p><%= level.title %></p>
-        
-        <% if(level.unlocked) { %>
-            <button onclick="completeLevel('<%= level.level %>')">Mark Completed</button>
-          <% } else { %>
-            <button disabled>Locked</button>
-          <% } %>
-      </div>
-    <% }) %>
-  </div>
-</div>
 
-<script>
-  function completeLevel(level) {
-    alert("✅ Level " + level + " completed!\nComing soon: real progress tracking!");
-  }
-</script>
 
-<script>
-    function completeLevel(level) {
-      alert("✅ Level " + level + " completed!\nWe'll unlock the next level soon!");
+router.post('/habit/:habitName/complete', async (req, res) => {
+    const { habitName } = req.params;
+    const { level } = req.body;
+    const userId = req.session?.userId || 'demoUser12345678901234567890';
+
+    try {
+        let progress = await HabitProgress.findOne({ userId, habitName });
+
+        if (!progress) {
+            progress = new HabitProgress({ userId, habitName, completedLevels: [parseInt(level)] });
+        } else if (!progress.completedLevels.includes(parseInt(level))) {
+            progress.completedLevels.push(parseInt(level));
+        }
+
+        await progress.save();
+        res.json({ success: true });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, error: 'Failed to save progress' });
     }
-  </script>
+});
 
 
-<%- include('partials/footer') %>
+
+  
+
+module.exports = router;
