@@ -1,0 +1,35 @@
+<%- include('partials/header') %>
+
+<div class="container">
+  <h1 style="text-align: center; margin-top: 20px;"><%= habitName %> - Levels</h1>
+
+  <div class="levels-grid">
+    <% levels.forEach(level => { %>
+      <div class="level-card <%= level.unlocked ? 'unlocked' : 'locked' %>">
+        <h2>Level <%= level.level %></h2>
+        <p><%= level.title %></p>
+        
+        <% if(level.unlocked) { %>
+            <button onclick="completeLevel('<%= level.level %>')">Mark Completed</button>
+          <% } else { %>
+            <button disabled>Locked</button>
+          <% } %>
+      </div>
+    <% }) %>
+  </div>
+</div>
+
+<script>
+  function completeLevel(level) {
+    alert("✅ Level " + level + " completed!\nComing soon: real progress tracking!");
+  }
+</script>
+
+<script>
+    function completeLevel(level) {
+      alert("✅ Level " + level + " completed!\nWe'll unlock the next level soon!");
+    }
+  </script>
+
+
+<%- include('partials/footer') %>
